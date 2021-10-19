@@ -1,4 +1,5 @@
 from subprocess import Popen
+from subprocess import PIPE
 
 from telegram import Bot
 from telegram import Update
@@ -15,7 +16,7 @@ from config import TG_TOKEN
 def do_start(bot: Bot, update: Update):
     bot.send_message(
         chat_id = update.message.chat_id,
-        text = "Привет! Коженый мешок",
+        text = "Привет! Коженый мешок!",
     )
 
 def do_help(bot: Bot, update: Update):
@@ -32,10 +33,11 @@ def do_time(bot: Bot, update: Update):
     process = Popen("date", stdout=PIPE)
     text, error = process.communicate()
     if error:
-        text = "Произошла ошибкаб внемя неизвестно"
+        text = "Произошла ошибка, время неизвестно"
     else:
         # Декодировать
-
+        text = text.decode("utf-8")
+        
     bot.send_message(
         chat_id = update.message.chat_id,
         text = text,

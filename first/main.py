@@ -9,8 +9,7 @@ from telegram.ext import CommandHandler
 from telegram.ext import MessageHandler
 from telegram.ext import Filters
 
-from config import TG_TOKEN
-# from config import TG_API_URL
+from config import load_config
 
 
 def do_start(bot: Bot, update: Update):
@@ -52,9 +51,10 @@ def do_first_bot(bot: Bot, update: Update):
     )
 
 def main():
+    config = load_config()
     bot = Bot(
-        token=TG_TOKEN,
-        # base_url = TG_API_URL,
+        token=config.TG_TOKEN,
+        # base_url = config.TG_API_URL,
     )
     updater = Updater(
         bot=bot,

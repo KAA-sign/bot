@@ -1,0 +1,16 @@
+[Unit]
+Description=Telegram bot 'SuperPuperTelegramBot'
+After=syslog.target
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/tele/bot  # рабочая директория (каталог)
+ExecStart=/usr/bin/python3 /home/tele/bot/first/main.py  # путь до python и основного файла бота
+# ExecStart=/opt/bot/bin/python /opt/bot/bot.py --serve-in-foreground  # если используется `venv` (`/opt/` как пример)
+RestartSec=10
+Restart=always
+ 
+[Install]
+WantedBy=multi-user.target

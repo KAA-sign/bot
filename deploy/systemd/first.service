@@ -6,8 +6,9 @@ After=network.target
 [Service]
 Type=idle
 User=root
-WorkingDirectory=/home/tele/bot/first
-ExecStart=/usr/bin/python3 /main.py
+WorkingDirectory=/home/ubuntu/projecrs/bot/first
+EnvironmentFile=/home/ubuntu/.local/bin/virtualenvwrapper.sh
+ExecStart=/home/ubuntu/venv/bot/bin/python /main.py
 RestartSec=10
 Restart=always
  

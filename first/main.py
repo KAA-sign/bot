@@ -1,3 +1,4 @@
+from asyncio import current_task
 import datetime
 from sre_constants import CALL
 from subprocess import Popen
@@ -20,7 +21,7 @@ from config import load_config
 
 
 # 'callback_data' - это то, что будет присылать бот при нажатии на каждую ктопку.
-# Каждый идентификатор должен быть уникальным
+
 CALLBACK_BUTTON1_LEFT = 'callback_button1_left'
 CALLBACK_BUTTON2_RIGTH = 'callback_button2_right'
 CALLBACK_BUTTON3_MORE = 'callback_button3_more'
@@ -41,6 +42,55 @@ TITLES = {
     CALLBACK_BUTTON8_PRICE: 'Brent &#128738',
 }
 
+def get_base_inline_keyboard():
+    '''Базовая клавиатура'''
+    keyboard = [
+        [
+            InlineKeyboardButton(TITLES[CALLBACK_BUTTON1_LEFT], callback_data=CALLBACK_BUTTON1_LEFT),
+            InlineKeyboardButton(TITLES[CALLBACK_BUTTON2_RIGTH], callback_data=CALLBACK_BUTTON2_RIGTH),
+        ],
+        [
+            InlineKeyboardButton(TITLES[CALLBACK_BUTTON3_MORE], callback_data=CALLBACK_BUTTON3_MORE),
+        ],
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
+def get_keyboard2():
+    '''Вложенная клавиатура'''
+    keyboard = [
+        [
+            InlineKeyboardButton(TITLES[CALLBACK_BUTTON5_TIME], callback_data=CALLBACK_BUTTON5_TIME),
+        ],
+        [
+            InlineKeyboardButton(TITLES[CALLBACK_BUTTON6_PRICE], callback_data=CALLBACK_BUTTON6_PRICE),
+            InlineKeyboardButton(TITLES[CALLBACK_BUTTON7_PRICE], callback_data=CALLBACK_BUTTON7_PRICE),
+            InlineKeyboardButton(TITLES[CALLBACK_BUTTON8_PRICE], callback_data=CALLBACK_BUTTON8_PRICE),
+        ],
+        [
+            InlineKeyboardButton(TITLES[CALLBACK_BUTTON4_BACK], callback_data=CALLBACK_BUTTON4_BACK),
+        ],
+    ]
+    return InlineKeyboardMarkup(keyboard)
+
+def keyboard_callback_hendler(bot: Bot, update: Update, chat_data=None, **kwargs):
+    '''Обработчик всех кнопок со всех клавиатур'''
+    query = update.callback_query
+    data = query.data
+    now = datetime.datetime.now()
+
+    chat_id = update.effective_message.chat_id
+    current_text = update.effective_message.text
+
+    if data == CALLBACK_BUTTON1_LEFT:
+        # Убираем клавиатуру
+        query.edit_message_text(text=current_text, parse_mode=ParseMode.MARKDOWN,)
+
+        # Отправляем новое сообщение при нажатии на кнопку
+        bot.send_message(
+            chat_id=chat_id,
+            text="Новое сообщение\n\ncollback_query.data={}".format(data),
+            reply_markup=get_base_inline_keyboard()
+            )
 
 def do_start(bot: Bot, update: Update):
     bot.send_message(
@@ -78,6 +128,7 @@ def do_first_bot(bot: Bot, update: Update):
     bot.send_message(
         chat_id = chat_id,
         text = text,
+        reply_markup=get_base_inline_keyboard(),
     )
 
 def main():

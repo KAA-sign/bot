@@ -89,13 +89,57 @@ def keyboard_callback_hendler(bot: Bot, update: Update, chat_data=None, **kwargs
         bot.send_message(
             chat_id=chat_id,
             text="Новое сообщение\n\ncollback_query.data={}".format(data),
-            reply_markup=get_base_inline_keyboard()
+            reply_markup=get_base_inline_keyboard(),
             )
+    elif data == CALLBACK_BUTTON2_RIGTH:
+        # Редактируем сообщение, но оставляем клавиатуру
+        query.edit_message_text(
+            text="Успешно отредактировано в {}".format(now),
+            reply_markup=get_base_inline_keyboard(),
+        )
+    elif data == CALLBACK_BUTTON3_MORE:
+        # Вложенная клавиатура
+        # Остаётся тот же текст
+        query.edit_message_text(
+            text=current_text,
+            reply_markup=get_keyboard2(),
+        )
+    elif data == CALLBACK_BUTTON4_BACK:
+        # Предидущий экран клавиатуры
+        # Остаётся тот же текст
+         query.edit_message_text(
+            text=current_text,
+            reply_markup=get_base_inline_keyboard(),
+        )
+    elif data == CALLBACK_BUTTON5_TIME:
+        # Новый текст, старая клавиатура
+        text = "*Точное время*\n\n{}".format(now)
+        query.edit_message_text(
+            text=text,
+            parse_mode=ParseMode.MARKDOWN,
+            reply_markup=get_keyboard2(),
+        )
+    elif data in (CALLBACK_BUTTON6_PRICE, CALLBACK_BUTTON7_PRICE):
+        pair = {
+            CALLBACK_BUTTON6_PRICE: "USD",
+            CALLBACK_BUTTON7_PRICE: "EUR",
+        }[data]
+        try:
+            current_price = client.get_last_price(pair=pair)
+            text = "*Курс валюты*\n\n*{}* = {}$".format(pair, current_price)
+        except CbrError:
+            text = "Произошла ошибка :(\n\nПопробуйте ещё раз"
+        query.edit_message_text(
+            text=text,
+            parse_mode=ParseMode.MARKDOWN,
+            reply_markup=get_keyboard2(),
+        )
 
 def do_start(bot: Bot, update: Update):
     bot.send_message(
         chat_id = update.message.chat_id,
         text = "Привет! Коженый мешок!",
+        reply_markup=get_base_inline_keyboard(),
     )
 
 def do_help(bot: Bot, update: Update):
@@ -104,6 +148,7 @@ def do_help(bot: Bot, update: Update):
         text="Это учебный бот\n\n"
             "Список доступных команд есть в меню\n\n"
             "Так же я отвечаю на любое сообщение",
+        reply_markup=get_base_inline_keyboard(),
     )
 
 def do_time(bot: Bot, update: Update):
@@ -120,6 +165,7 @@ def do_time(bot: Bot, update: Update):
     bot.send_message(
         chat_id = update.message.chat_id,
         text = text,
+        reply_markup=get_base_inline_keyboard(),
     )
 
 def do_first_bot(bot: Bot, update: Update):
